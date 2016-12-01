@@ -1,13 +1,12 @@
-#!/usr/bin/python
 # encoding=utf-8
-
 import requests
 import time
 import json
-import random 
+import random
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from yundama import identify
+
 
 class SpiderMessage(object):
     """ 功能：爬虫的参数信息（日志、说说、个人信息、好友四个爬虫共用）"""
@@ -21,6 +20,7 @@ class SpiderMessage(object):
         self.newQQ = []  # 爬虫爬下来的QQ，准备加入待爬队列
         self.fail_time = None  # 失败几次不再循环
         self.timeout = None  # 超时时间
+
 
 class Changing(object):
     """ 功能：更换QQ、更换Cookie """
@@ -50,7 +50,7 @@ class Changing(object):
         """ Cookie失效时进行更换Cookie """
         account = message.account
         password = message.password
-        cookie = get_cookie(account, password)  # 根据QQ号和密码获取Cookie
+        cookie = getCookie(account, password)  # 根据QQ号和密码获取Cookie
         if cookie:
             message.s.cookies.update(json.loads(cookie))
             self.my_messages.rconn.set('QQSpider:Cookies:%s--%s' % (account, password), cookie)
@@ -72,11 +72,10 @@ class Changing(object):
         return hashes & 0x7fffffff
 
 
-
-def get_cookie(account, password, dama=False):
+def getCookie(account, password, dama=False):
     """ 根据QQ号和密码获取cookie """
     failure = 0
-    while failure < 3:
+    while failure < 2:
         try:
             dcap = dict(DesiredCapabilities.PHANTOMJS)
             dcap["phantomjs.page.settings.userAgent"] = (
@@ -100,7 +99,7 @@ def get_cookie(account, password, dama=False):
             password_input.send_keys(password)
             go.click()
             time.sleep(2)
-
+	    print "login !!!"
             while '验证码' in browser.page_source:
                 try:
                     print '需要处理验证码！'
@@ -141,8 +140,4 @@ def get_cookie(account, password, dama=False):
         except KeyboardInterrupt, e:
             raise e
     return ''
-
-
-#get_cookie("365027110", "ella198809100617")
-
 

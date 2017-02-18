@@ -19,7 +19,17 @@ class FriendSpider(object):
                 friendlist.remove(self.message.qq)
         except Exception, e:
             self.message.newQQ = []
-            return {}
+	try:
+	    url = "http://user.qzone.qq.com/"+self.message.qq
+	    r = self.message.s.get(url, timeout = self.message.timeout)
+            fl2 = re.findall('href="http://user.qzone.qq.com/(\d{4,})"', r.text)
+	    fl2 = list(set(fl2))
+	    if self.message.qq in fl2:
+		    fle.remove(self.message.qq)
+	except Exception, e:
+		pass
+	    print fl2
+	    friendlist = friendlist + fl2
 
         self.message.newQQ = friendlist
         num = 0
